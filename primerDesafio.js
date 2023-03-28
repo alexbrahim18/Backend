@@ -5,7 +5,7 @@ class ProductManager {
     }
 
     getProducts = () =>{
-        return this.products
+        console.log(this.products); 
     }
     
     getProductByID =(id)=>{
@@ -35,8 +35,9 @@ class ProductManager {
 }
 
 const manager = new ProductManager()
-manager.addProduct("PS5", "Consola de videojuegos", 240000, "url", "consol1",5 );
-manager.addProduct("XBOX ONE", "Consola de videojuegos", 230000,"url","consol2", 6);
 manager.getProducts();
+manager.addProduct("producto prueba", "Este es un producto prueba", 200, "Sin imagen", "abc123",25 );
+manager.getProducts();
+manager.addProduct("producto prueba", "Este es un producto prueba", 200, "Sin imagen", "abc123",25 );
+manager.getProductByID(1);
 manager.getProductByID(2);
-console.log(manager.products);
