@@ -43,19 +43,25 @@ class ProductManager {
     }
 
     updateProduct = (id, campo, cambio)=>{
-        const lista = JSON.parse(fs.readFileSync(this.path, "utf-8")) ;
-        const cambiar = lista.findIndex(obj=>obj.id === id)
-        cambiar.campo = cambio
-        const updateList = JSON.stringify(lista);
-        fs.writeFileSync(this.path, updateList)
+        const objIndex = this.products.findIndex(obj=>obj.id === id)
+         
+        if(objIndex !== -1) {
+            this.products[objIndex][campo] = cambio
+            fs.writeFileSync(this.path, JSON.stringify(this.products, null , "\t")) 
+        }else{
+            return console.log("Producto no encontrado");
+        }
     }
 
     deleteProduct = (id) =>{
-        const lista = JSON.parse(fs.readFileSync(this.path, "utf-8")) ;
-        const borrar = lista.findIndex(obj=>obj.id === id)
-        lista.splice(borrar, 1);
-        const updateList =JSON.stringify(lista);
-        fs.writeFileSync(this.path, updateList)
+        const borrar = this.products.findIndex(obj=>obj.id === id)
+
+        if(borrar !== -1) {
+            this.products.splice(borrar, 1);
+            fs.writeFileSync(this.path, JSON.stringify(this.products, null , "\t")) 
+        }else{
+            return console.log("Producto no encontrado");
+        }
     }
 
 
@@ -68,5 +74,7 @@ console.log(manager.getProducts());
 manager.addProduct("producto prueba", "Este es un producto prueba", 200, "Sin imagen", "abc123",25 );
 manager.getProductByID(1); 
 manager.getProductByID(2);
-manager.updateProduct(1,stock,24) 
+manager.updateProduct(1, "price","150");
+manager.getProductByID(1); 
 manager.deleteProduct(1);
+manager.deleteProduct(2);
