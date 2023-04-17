@@ -1,4 +1,6 @@
 const fs = require("fs");
+
+
 class ProductManager {
     constructor (){
         this.products = []
@@ -67,7 +69,11 @@ class ProductManager {
 
 }
 
-const manager = new ProductManager()
+
+module.exports= ProductManager;
+
+
+/* const manager = new ProductManager()
 console.log(manager.getProducts()); 
 manager.addProduct("producto prueba", "Este es un producto prueba", 200, "Sin imagen", "abc123",25 );
 console.log(manager.getProducts()); 
@@ -77,4 +83,4 @@ manager.getProductByID(2);
 manager.updateProduct(1, "price","150");
 manager.getProductByID(1); 
 manager.deleteProduct(1);
-manager.deleteProduct(2);
+manager.deleteProduct(2); */
