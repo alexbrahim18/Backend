@@ -1,0 +1,48 @@
+<h1 class="text-center">Crear un Producto</h1>
+
+<div class="container d-flex">
+    <form class="col-8 justify-content-center" action="/api/products" method="post">
+      <div class="mb-3">
+        <label for="name" class="form-label">Nombre</label>
+        <input type="text" class="form-control" name="title" id="name" required>
+      </div>
+      <div class="mb-3">
+        <label for="name" class="form-label">Descripcion</label>
+        <input type="text" class="form-control" name="description" id="name" required>
+      </div>
+      <div class="mb-3">
+        <label for="name" class="form-label">Precio</label>
+        <input type="numbre" class="form-control" name="price" id="name" required>
+      </div>
+      <div class="form-check" id="radiocheck">
+        <p>Status</p>
+  <input class="form-check-input" type="radio" name="status" value="true" id="flexRadioDefault1" checked>
+  <label class="form-check-label" for="flexRadioDefault1">
+    True
+  </label>
+</div>
+<div class="form-check">
+  <input class="form-check-input" type="radio" name="status" value="false" id="flexRadioDefault2" >
+  <label class="form-check-label" for="flexRadioDefault2">
+    False
+  </label>
+</div>
+      <div class="mb-3">
+        <label for="code" class="form-label">Code</label>
+        <input type="text" name="code" class="form-control" id="code" required>
+      </div>
+      <div class="mb-3">
+        <label for="stock" class="form-label">Stock</label>
+        <input type="number" class="form-control" name="stock" id="stock" required>
+      </div>
+      <div class="mb-3">
+        <label for="categoria" class="form-label">Categoria</label>
+        <input type="text" class="form-control" name="category" id="categoria" required>
+      </div>
+      <div class="mb-3">
+        <label for="thumbnail " class="form-label">Imagen</label>
+        <input type="text" class="form-control" name="thumbnail" id="thumbnail" required>
+      </div>
+      <button type="submit" value="Register" class="btn btn-primary">Registrar</button>
+    </form>
+</div>

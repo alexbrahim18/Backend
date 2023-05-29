@@ -1,0 +1,13 @@
+<h3>Carro</h3>
+{{#each products}}
+    <div class="product">
+        <h4>{{this.product.title}}</h4>
+        <img src="https://sinteplastconstruccion.com.ar/assets/img/sinteplastconstruccion.com.ar/photos/w300/{{this.product.thumbnails}}"  alt="foto producto" width="100">
+        <p>{{this.product.description}}</p>
+        <p>Precio: ${{this.product.price}}</p>
+        <p>Cantidad: {{this.quantity}}</p>
+        <p>Código: {{this.product.code}}</p>
+        <a href="../products/{{this.product._id}}" class="verproducto">Ver Producto</a>
+    </div>
+{{/each}}
+</div>

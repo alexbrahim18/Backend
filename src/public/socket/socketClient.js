@@ -28,11 +28,12 @@ const reviewList=()=>{
     let pList= JSON.parse(manager.getProducts()) 
     socketClient.emit("productList", {pList})
 }  
+
 socketClient.on('productList', pList =>{ 
     printList(pList)
     })
 
 
+
 const firstData= JSON.parse(manager.getProducts()) 
-console.log(firstData);
 printList(firstData)
