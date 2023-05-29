@@ -54,33 +54,7 @@ class productManager {
     return product;
   };
 
-/* getProducts = async (limit,page) => {
-  
-  
-  //const psort = sort=== "asc" ? {price:1} : sort === "desc" ? {price:-1} : {};
-  try{ 
-    const products = await productModel.paginate({},{
-    page,
-    limit,
-    lean:true,
-  });
-  const result = {
-    status: "success",
-    payload: products.docs,
-    totalPages: products.totalPages,
-    prevPage: products.prevPage,
-    nextPage: products.nextPage,
-    page: products.page,
-    hasPrevPage: products.hasPrevPage,
-    hasNextPage: products.hasNextPage,
-    prevLink: products.prevLink,
-    nextLink: products.nextLink
-  }
-  return result;
-}catch(error){
-  return { error: 3, servererror: error };
-};
-  } */
+
   
   getProducts = async (limit = 10, page = 1, query, sort) => {
     
@@ -128,7 +102,7 @@ class productManager {
         return { error: 3, servererror: error };
     }}
   
-  async getProducById (id) {
+  async getProductById (id) {
     try {
         const foundprod = productModel.findOne({ _id: id }).lean().exec();
         return foundprod;

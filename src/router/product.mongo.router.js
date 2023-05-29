@@ -25,6 +25,7 @@ router.get("/:id", async (req, res) => {
             servererror: error,
         });
     }
+    
 });
 
 export default router;

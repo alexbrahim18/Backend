@@ -8,11 +8,8 @@ const carro = new CartManagerDB();
 router.get("/", async (req, res) => {
     try {
         const result = await carro.getCarts();
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.status(201).send(result);
-        }
+        res.status(400).render("carts",result);
+        
     } catch (err) {
         res.status(400).send(err);
     }
@@ -33,11 +30,9 @@ router.get("/:cid", async (req, res) => {
 router.post("/", async (req, res) => {
     try {
         const result = await carro.addCart();
-        if (result.error) {
+        
             res.status(400).send(result);
-        } else {
-            res.status(201).send(result);
-        }
+        
     } catch (err) {
         res.status(400).send(err);
     }
@@ -49,11 +44,9 @@ router.post("/:cid/product/:pid", async (req, res) => {
     };
     try {
         const result = await carro.addProduct(newCartProduct);
-        if (result.error) {
+        
             res.status(400).send(result);
-        } else {
-            res.status(201).send(result);
-        }
+        
     } catch (err) {
         res.status(400).send(err);
     }

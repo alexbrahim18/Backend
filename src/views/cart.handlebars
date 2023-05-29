@@ -2,7 +2,7 @@
 {{#each products}}
     <div class="product">
         <h4>{{this.product.title}}</h4>
-        <img src="https://sinteplastconstruccion.com.ar/assets/img/sinteplastconstruccion.com.ar/photos/w300/{{this.product.thumbnails}}"  alt="foto producto" width="100">
+        <img src={{this.product.thumbnail}}  alt="foto producto" width="100">
         <p>{{this.product.description}}</p>
         <p>Precio: ${{this.product.price}}</p>
         <p>Cantidad: {{this.quantity}}</p>
