@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { UserManagerDB } from "../dao/UserManagerDB.js";
+import userManagerDB from "../dao/MongoDB/userManager.js";
 
 const router = Router();
-const user = new UserManagerDB();
+const user = new userManagerDB();
 
 router.get("/", (req, res) => {
     console.log(req.session)

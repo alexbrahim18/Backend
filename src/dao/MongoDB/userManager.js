@@ -1,7 +1,7 @@
-import { userModel } from "./models/users.model.js";
+import  userModel  from "../models/user.model.js";
 import bcrypt from "bcrypt";
 
-class UserManagerDB {
+class userManagerDB {
     newUser = async ({ first_name, last_name, email, age, password }) => {
         try {
             const regex =
@@ -79,4 +79,4 @@ class UserManagerDB {
     };
 }
 
-export { UserManagerDB };
+export default  userManagerDB ;

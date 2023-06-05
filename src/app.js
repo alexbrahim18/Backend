@@ -12,6 +12,7 @@ import MongoStore from "connect-mongo";
 
 
 
+
 mongoose.set("strictQuery", false);
 
 const app = express();
@@ -54,7 +55,7 @@ app.use(
 
 
 try {
-    await mongoose.connect(uri,{ dbName: "ecommerce" });
+    await mongoose.connect("mongodb+srv://alexbrahim18:156304495sS44@cluster0.acpqu06.mongodb.net/ecommerce",{ dbName: "ecommerce" });
     console.log("DB conected");
     app.listen(8080, () => {console.log("Server UP");});
 } catch (error) {
