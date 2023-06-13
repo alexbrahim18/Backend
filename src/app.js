@@ -9,6 +9,10 @@ import productsRouter from "./router/product.mongo.router.js"
 import userRouter from "./router/users.router.js"
 import session from "express-session"
 import MongoStore from "connect-mongo";
+import passport from "passport";
+import initializePassport from "./config/passport.config.js"
+import dotenv from "dotenv"
+dotenv.config()
 
 
 
@@ -27,41 +31,48 @@ app.engine("handlebars", handlebars.engine())
 app.set("views", "./src/views")
 app.set("view engine", "handlebars")
 
+app.use(
+  session({
+      store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URI,
+        dbName: process.env.MONGO_DB_NAME,
+          mongoOptions: {
+              useNewUrlParser: true,
+              useUnifiedTopology: true,
+          },
+          ttl: 120,
+      }),
+      secret: "R0n4ld1nh0",
+      resave: true,
+      saveUninitialized: true,
+  }),
+);
 
+initializePassport()
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.use("/", userRouter);
 app.use("/api/products", productRouterMongo )
 app.use("/api/carts", cartRouterMongo)
 app.use("/carts", cartsRouter)
 app.use("/products", productsRouter)
+//app.use("/api/session", userRouter)
 
-app.use(
-    session({
-        store: MongoStore.create({
-            mongoUrl:
-            "mongodb+srv://alexbrahim18:156304495sS44@cluster0.acpqu06.mongodb.net/ecommerce",
-            dbName: "ecommerce",
-            mongoOptions: {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-            },
-            ttl: 120,
-        }),
-        secret: "R0n4ld1nh0",
-        resave: true,
-        saveUninitialized: true,
-    }),
-);
+
+
+
 
 
 try {
-    await mongoose.connect("mongodb+srv://alexbrahim18:156304495sS44@cluster0.acpqu06.mongodb.net/ecommerce",{ dbName: "ecommerce" });
-    console.log("DB conected");
-    app.listen(8080, () => {console.log("Server UP");});
-} catch (error) {
-    console.log(error);
-}
-
+    await mongoose.connect(process.env.MONGO_URI, {
+      dbName: process.env.MONGO_DB_NAME
+    })
+    console.log("DB connected!");
+    app.listen(8080, () => console.log('Server Up'))
+  } catch (err) {
+    console.log('Exploto todo');
+  }
 
 
 

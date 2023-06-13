@@ -1,17 +1,34 @@
-<h1>Real time products</h1>
-
-<div id="divList"></div>
-
-<form action="/realtimeproducts" method="post">
-    Title:<input type="text" name="title"><br>
-    Description:<input type="text" name="description"><br>
-    Code:<input type="text" name="description"><br>
-    Price: <input type="number" name="price"><br>
-    Category: <input type="text" name="category"><br>
-    Stock: <input type="number" name="stock"><br>
-    Thumbnail:<input type="text" name="description"><br>
-    <button type="submit" id="createProd">Create product</button> 
+<h3>Productos en tiempo real</h3>
+<form id="addproduct">
+    <h4>Agregar producto JSON</h4>
+    <textarea name="prodjson" id="prodjson" cols="20" rows="5"></textarea>
+    <button type="submit">Enviar</button>
 </form>
 
-<script src="/socket.io/socket.io.js"></script> 
-<script src="/src/public/socket/socketClient.js"></script>
+<div id="realtimeproducts">
+    {{#each products}}
+        <div id="product{{this.id}}">
+            <h4>{{this.title}}</h4>
+            <img
+                src="https://sinteplastconstruccion.com.ar/assets/img/sinteplastconstruccion.com.ar/photos/w300/{{this.thumbnails}}"
+                alt="foto producto"
+                width="100"
+            />
+            <p>{{this.description}}</p>
+            <p>Precio: ${{this.price}}</p>
+            <p>Categoría: {{this.category}}</p>
+            <p>Imagen: {{this.thumbnails}}</p>
+            <p>Status: {{this.status}}</p>
+            <p>Código: {{this.code}}</p>
+            <p>Stock: {{this.stock}}</p>
+            <input
+                type="button"
+                class="deleteproduct"
+                prodid="{{this.id}}"
+                value="Borrar este producto"
+            />
+        </div>
+    {{/each}}
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="../scripts/socketClient.js"></script>

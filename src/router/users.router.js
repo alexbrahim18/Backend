@@ -1,69 +1,66 @@
 import { Router } from "express";
-import userManagerDB from "../dao/MongoDB/userManager.js";
+import passport from "passport";
+import userManagerDB  from "../dao/MongoDB/userManager.js";
 
 const router = Router();
 const user = new userManagerDB();
-
 router.get("/", (req, res) => {
-    console.log(req.session)
-    res.render("register", {});
-});
-router.get("/register", (req, res) => {
-    res.render("register", {});
-});
-router.post("/", async (req, res) => {
-    const newuser = req.body;
-    console.log(newuser);
-    try {
-        const result = await user.newUser(newuser);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.redirect("login");
-        }
-    } catch (err) {
-        res.status(400).send(err);
-    }
-});
-router.post("/register", async (req, res) => {
-    const newuser = req.body;
-    console.log(newuser);
-    try {
-        const result = await user.newUser(newuser);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.redirect("login");
-        }
-    } catch (err) {
-        res.status(400).send(err);
+    if (req.session.user) {
+        res.redirect("/products");
+    } else {
+        res.render("login", {});
     }
 });
 router.get("/login", (req, res) => {
-    console.log(req.Session)
-    console.log(req.sessions)
-    console.log(req.session)
-    res.render("login", {});
-});
-router.post("/login", async (req, res) => {
-    const loguser = req.body;
-    try {
-        const result = await user.loginUser(loguser);
-        console.log(result);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            delete result.password;
-            delete result._id;
-            delete result.__v;
-            req.session.user = result;
-            res.status(200).send(result);
-        }
-    } catch (err) {
-        console.log(err);
-        res.status(400).send(err);
+    if (req.session.user) {
+        res.redirect("/products");
+    } else {
+        res.render("login", {});
     }
 });
+router.post(
+    "/login",
+    passport.authenticate("login", { failureRedirect: "/failurelogin" }),
+    async (req, res) => {
+        if (!req.user) {
+            res.render("login", {
+                message: {
+                    type: "error",
+                    title: "Error de logueo",
+                    text: "El correo eletrónico o contraseña no son correctos",
+                },
+            });
+        } else {
+            delete req.user.password;
+            delete req.user._id;
+            delete req.user.__v;
+            req.session.user = req.user;
+            res.redirect("/products");
+        }
+    },
+);
+router.get("/register", (req, res) => {
+    if (req.session.user) {
+        res.redirect("/products");
+    } else {
+        res.render("register", {});
+    }
+});
+router.post(
+    "/register",
+    passport.authenticate("register", {
+        failureRedirect: "failureregister",
+    }),
+    async (req, res) => {
+        res.render("login", {
+            message: {
+                type: "success",
+                title: "Registro exitoso",
+                text: "Iniciá tu session con los datos cargados",
+            },
+        });
+    },
+);
 router.get("/logout", (req, res) => {
     req.session.destroy((error) => {
         if (error) {
@@ -73,5 +70,38 @@ router.get("/logout", (req, res) => {
         }
     });
 });
-
+router.get("/failureregister", (req, res) => {
+    res.render("register", {
+        message: {
+            type: "error",
+            title: "Error de registro",
+            text: "El email ya se encuentre registrado",
+        },
+    });
+});
+router.get("/failurelogin", (req, res) => {
+    res.render("login", {
+        message: {
+            type: "error",
+            title: "Error de logueo",
+            text: "El correo eletrónico o contraseña no son correctos",
+        },
+    });
+});
+router.get(
+    "/githublogin",
+    passport.authenticate("github", { scope: ["user: email"] }),
+   (req, res) => {},
+);
+router.get(
+    "/githubcallback",
+    passport.authenticate("github", { failureRedirect: "/failurelogin" }),
+    async (req, res) => {
+        delete req.user.password;
+        delete req.user._id;
+        delete req.user.__v;
+        req.session.user = req.user;
+        res.redirect("/products");
+    },
+);
 export default router;
