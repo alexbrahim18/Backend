@@ -1,79 +1,131 @@
 import fs from "fs";
 
-class CartManager{
-    constructor(){
-        this.index = 0
-        this.path = "./src/data/carrito.json"
-        this.productPath = "./src/data/productos.json"
-        /* this.carts = []
-        fs.writeFileSync(this.path, JSON.stringify(this.carts,null, "\t")) */
-        
-    }
+import { ProductManager } from "./ProductManager.js";
 
-    newCart = () =>{
-        let id = 1
-        let lista  = fs.readFileSync(this.path, "utf-8")
-        let carts = JSON.parse(lista)
-       if (carts.length >0){
-            id = carts[carts.length-1].id+1
-            let  cart={
-                        id,
-                        products : []
-                    }
-        carts.push(cart)
-        fs.writeFileSync(this.path, JSON.stringify(carts, null, "\t"))
-        }  else{
-                let cart = {
-                    id,
-                    products :[]
-                }
-                fs.writeFileSync(this.path,JSON.stringify([cart],null,2))
-        }
-        return(carts)
-    }
+const prod = new ProductManager("./src/data/productos.json");
 
-
-    addToCart = async (id,productId)=>{
-        id = parseInt(id)
-        productId = parseInt(productId)
-        if(!fs.existsSync(this.path)) return{error:0, descripcion:"No existe la DB"}
-        if(!fs.existsSync(this.productPath)) return {error:0, descripcion:"No existe la DB"}
-        let productList =  await fs.promises.readFile(this.productPath, "utf-8") 
-        let productos = JSON.parse(productList)
-        let found = productos.find(e => e.id === productId)
-        if (!found) return {error:0, descripcion:"Producto no encontrado"}
-        let lista  = await fs.promises.readFile(this.path, "utf-8")
-        let carts = JSON.parse(lista)
-        let foundCart = carts.find(i =>i.id === id)
-        if (!foundCart) return {error:0, descripcion:"Producto no encontrado"}
-        let producto = foundCart.products.find(i => i.id === productId)
-        if(foundCart.products.some(i=> i.id === productId)){
-            producto.cuantity = producto.cuantity + 1
-            fs.writeFileSync(this.path, JSON.stringify(carts,null,"\t"))
-        } else{
-            let producto = {
-                id : productId,
-                cuantity: 1
+class CartManager {
+    #Carts;
+    #path; // ruta del archivo
+    constructor(path = "./src/carritos.json") {
+        this.#path = path;
+        this.#Carts = [];
+        const loadCarts = async () => {
+            try {
+                // Si el archivo existe copio los datos del archivo a #Carts.
+                this.#Carts = JSON.parse(
+                    await fs.promises.readFile(this.#path, "utf-8")
+                );
+            } catch {
+                // Si el archivo no existe inicializo #Carts con un array vacio.
+                this.#Carts = [];
             }
-            foundCart.products.push(producto)
-            fs.writeFileSync(this.path, JSON.stringify(carts,null,"\t"))
-        }
-        return(foundCart)
-        }
-
-
-        getProductsFromCart = async(id)=>{
-            id = parseInt(id)
-            if(!fs.existsSync(this.path)) return{error:0, descripcion:"No existe la DB"}
-            let cartList = await fs.promises.readFile(this.path, "utf-8")
-            let carts = JSON.parse(cartList)
-            let found = carts.find(e=>e.id === id)
-            return (found.products)
-
-
-        }
+        };
+        loadCarts();
     }
+    getCarts = () => {
+        return this.#Carts;
+    };
+
+    getCartById = (cid) => {
+        // busco el indice del Carro
+        const cartfound = this.#Carts.findIndex(
+            (Carro) => Carro.id === parseInt(cid)
+        );
+        // Si no existe devuelvo el error
+        if (cartfound < 0) {
+            return { error: 2, errortxt: "el Carro no existe" };
+        }
+        const Carro = this.#Carts[cartfound];
+        const productosCompleto = Carro.products.map((producto) => {
+            // busco el id del producto en la lista de productos
+            const prodexists = prod.getProductById(producto.id);
+            // Si no existe agrego el error al producto, sino agrego los datos faltantes al producto
+            if (prodexists.id === undefined) {
+                return {
+                    ...producto,
+                    error: 2,
+                    errortxt: "el Producto ya no esta disponible",
+                };
+            } else {
+                return { ...producto, ...prodexists };
+            }
+        });
+        return {id: Carro.id, products: productosCompleto};
+    };
+
+    // Metodo para obtener la ruta al archivo
+    getPath = () => {
+        return this.#path;
+    };
+
+    addCart = () => {
+        const id =
+            this.#Carts.length === 0
+                ? 1
+                : this.#Carts[this.#Carts.length - 1].id + 1;
+        const products = [];
+        const Cart = {
+            id,
+            products,
+        };
+        this.#Carts.push(Cart);
+        const saveCarts = async () => {
+            try {
+                const filewriten = await fs.promises.writeFile(
+                    this.#path,
+                    JSON.stringify(this.#Carts)
+                );
+                return Cart;
+            } catch (err) {
+                return err;
+            }
+        };
+        return saveCarts();
+    };
+
+    addProduct = ({ cid, pid }) => {
+        // busco el indice del Carro
+        const cartfound = this.#Carts.findIndex(
+            (Carro) => Carro.id === parseInt(cid)
+        );
+        // Si no existe devuelvo el error
+        if (cartfound < 0) {
+            return { error: 2, errortxt: "el Carro no existe" };
+        }
+        const Carro = this.#Carts[cartfound];
+        // busco el id del producto en la lista de productos
+        const prodexists = prod.getProductById(pid);
+        // Si no existe devuelvo el error
+        if (prodexists.id === undefined) {
+            return { error: 2, errortxt: "el Producto no existe" };
+        }
+        // busco el id del producto dentro del carro
+        const prodfound = Carro.products.findIndex(
+            (product) => product.id === parseInt(pid)
+        );
+        // Si no existe devuelvo sumo el producto al carro, sino sumo 1 en quantity
+        if (prodfound < 0) {
+            Carro.products.push({ id: pid, quantity: 1 });
+        } else {
+            Carro.products[prodfound].quantity++;
+        }
+        // grabo los carros
+        const saveCarts = async () => {
+            try {
+                const filewriten = await fs.promises.writeFile(
+                    this.#path,
+                    JSON.stringify(this.#Carts)
+                );
+                return Carro;
+            } catch (err) {
+                return err;
+            }
+        };
+        return saveCarts();
+    };
+}
 
 
 
-export default CartManager
+export { CartManager };

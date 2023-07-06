@@ -1,22 +1,17 @@
 import { Router } from "express";
 import passport from "passport";
-import userManagerDB  from "../dao/MongoDB/userManager.js";
+import { UserManagerDB } from "../dao/controllers/userManager.js";
+import { generateToken, userLogged, passportAuthenticateApi } from "../utils.js";
+import config from '../config/config.js'
+
 
 const router = Router();
-const user = new userManagerDB();
-router.get("/", (req, res) => {
-    if (req.session.user) {
-        res.redirect("/products");
-    } else {
-        res.render("login", {});
-    }
+const user = new UserManagerDB();
+router.get("/", userLogged("jwt"), (req, res) => {
+    res.render("login", {});
 });
-router.get("/login", (req, res) => {
-    if (req.session.user) {
-        res.redirect("/products");
-    } else {
-        res.render("login", {});
-    }
+router.get("/login", userLogged("jwt"), (req, res) => {
+    res.render("login", {});
 });
 router.post(
     "/login",
@@ -34,17 +29,14 @@ router.post(
             delete req.user.password;
             delete req.user._id;
             delete req.user.__v;
-            req.session.user = req.user;
-            res.redirect("/products");
+            res.cookie(config.JWT_COOKIE, req.user.token).redirect(
+                "/products",
+            );
         }
     },
 );
-router.get("/register", (req, res) => {
-    if (req.session.user) {
-        res.redirect("/products");
-    } else {
-        res.render("register", {});
-    }
+router.get("/register", userLogged("jwt"), (req, res) => {
+    res.render("register", {});
 });
 router.post(
     "/register",
@@ -62,13 +54,7 @@ router.post(
     },
 );
 router.get("/logout", (req, res) => {
-    req.session.destroy((error) => {
-        if (error) {
-            res.status(500).render("errors", { error: error });
-        } else {
-            res.redirect("login");
-        }
-    });
+    res.clearCookie(config.JWT_COOKIE).redirect("login");
 });
 router.get("/failureregister", (req, res) => {
     res.render("register", {
@@ -91,7 +77,7 @@ router.get("/failurelogin", (req, res) => {
 router.get(
     "/githublogin",
     passport.authenticate("github", { scope: ["user: email"] }),
-   (req, res) => {},
+    (req, res) => {},
 );
 router.get(
     "/githubcallback",
@@ -100,8 +86,19 @@ router.get(
         delete req.user.password;
         delete req.user._id;
         delete req.user.__v;
-        req.session.user = req.user;
-        res.redirect("/products");
+        const token = generateToken(req.user);
+        req.user.token = token;
+        res.cookie(config.JWT_COOKIE, req.user.token).redirect(
+            "/products",
+        );
     },
 );
+router.get("/current",  passportAuthenticateApi("jwt"), (req, res) => {
+    if (!req.user) {
+        res.status(400).send({
+            error: "No existe una sesión de usuario activa",
+        });
+    }
+    res.send(req.user);
+});
 export default router;

@@ -1,6 +1,5 @@
 import { Router } from "express";
-import  CartManagerDB  from "../dao/MongoDB/cartManager.js";
-
+import { CartManagerDB } from "../dao/controllers/cartManager.js"
 
 const router = Router();
 const carro = new CartManagerDB();
@@ -8,8 +7,11 @@ const carro = new CartManagerDB();
 router.get("/", async (req, res) => {
     try {
         const result = await carro.getCarts();
-        res.status(400).render("carts",result);
-        
+        if (result.error) {
+            res.status(400).send(result);
+        } else {
+            res.render("carts", result)
+        }
     } catch (err) {
         res.status(400).send(err);
     }
@@ -19,9 +21,10 @@ router.get("/:cid", async (req, res) => {
     try {
         const result = await carro.getCartById(cid);
         if (result.error) {
-            res.status(400).send(result);
+           res.status(400).send(result);
         } else {
-            res.status(201).send(result);
+            // res.status(201).send(result);
+            res.render("cart", result)
         }
     } catch (err) {
         res.status(400).send(err);
@@ -30,9 +33,11 @@ router.get("/:cid", async (req, res) => {
 router.post("/", async (req, res) => {
     try {
         const result = await carro.addCart();
-        
+        if (result.error) {
             res.status(400).send(result);
-        
+        } else {
+            res.status(201).send(result);
+        }
     } catch (err) {
         res.status(400).send(err);
     }
@@ -44,9 +49,11 @@ router.post("/:cid/product/:pid", async (req, res) => {
     };
     try {
         const result = await carro.addProduct(newCartProduct);
-        
+        if (result.error) {
             res.status(400).send(result);
-        
+        } else {
+            res.status(201).send(result);
+        }
     } catch (err) {
         res.status(400).send(err);
     }
@@ -86,7 +93,6 @@ router.put("/:cid/product/:pid", async (req, res) => {
         pid: req.params.pid,
         qty: req.body.qty,
     };
-    console.log(updateProduct);
     try {
         const result = await carro.updateProductQty(updateProduct);
         if (result.error) {
@@ -101,7 +107,6 @@ router.put("/:cid/product/:pid", async (req, res) => {
 router.put("/:cid", async (req, res) => {
     const cid = req.params.cid;
     const products = req.body;
-    console.log(cid,products)
     try {
         const result = await carro.updateAllProducts(cid, products);
         if (result.error) {

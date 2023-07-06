@@ -1,27 +1,17 @@
-import { Router } from "express"
-import ProductManager from "../dao/fileSystem/ProductManager.js"
+import { Router } from "express";
+import { ProductManager } from "../dao/fileSystem/ProductManager.js";
 
-const router= Router()
-const manager= new ProductManager()
+const router = Router();
 
-const pList= JSON.parse(manager.getProducts()) 
+const prod = new ProductManager("./src/data/productos.json");
 
-
-router.get('/', (req, res)=>{
-    res.render('realTimeProducts', {pList})
-    
-})
-
-router.post('/',(req, res)=>{
-    
-    if (pList.some(i => i.code === req.body.code)){
-        res.status(206).send("Codigo repetido")
-    } else if(!req.body.description || !req.body.title || !req.body.price || !req.body.thumbnail || !req.body.code || !req.body.stock || !req.body.category ){
-        res.status(206).send("Faltan datos")
-    }else{
-        manager.addProduct(req.body)
-        res.render('realTimeProducts')
+router.get("/", async (req, res) => {
+    try {
+        const products = prod.getProducts();
+        res.render("realTimeProducts", { products: products });
+    } catch (err) {
+        res.status(400).send(err);
     }
-})
+});
 
-export default router
+export default router;

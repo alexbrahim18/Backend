@@ -1,48 +1,33 @@
 import { Router } from "express";
-import productModel from "../dao/models/product.model.js";
-import ProductManager from "../dao/MongoDB/productManager.js";
+import { ProductManagerDB } from "../dao/controllers/productManager.js";
 
+const router = Router();
+const prod = new ProductManagerDB();
 
-
-const router = Router()
-
-const manager = new ProductManager()
-
-
-    
-  router.get("/",async (req,res)=>{
+router.get("/", async (req, res) => {
+    let { limit, page, query, sort } = req.query;
     try {
-        const productos = await manager.getProducts(req.query.limit, req.query.page,req.query.query , req.query.sort);
-        console.log(productos);
-        res.status(200).render("products", productos);
+        const productos = await prod.getProducts(limit, page, query, sort);
+        const user = req.user;
+        res.render("products", {
+            productos: productos,
+            user: user,
+        });
     } catch (err) {
         res.status(400).send(err);
     }
-  })
-
-
-router.get("/create", async (req,res)=>{
-    res.render("create")
-})
-
-router.post("/", async (req, res) => {
-  const product = req.body;  
-  try {
-        const result = await manager.createProduct(product);
-    } catch (err) {
-        res.status(400).send(err);
+});
+router.get("/:id", async (req, res) => {
+    let id = req.params.id;
+    try {
+        const foundprod = await prod.getProductById(id);
+        res.render("product", foundprod);
+    } catch (error) {
+        res.status(404).send({
+            error: "Producto no encontrado",
+            servererror: error,
+        });
     }
-    res.redirect("/api/products")
 });
 
-
-
-router.delete("/delete/:id", async (req,res)=>{
-  manager.deleteProduct(req.params.id);
-  res.send("Se borro el producto correctamente")
-})
-
-
-
-
-export default router
+export default router;
