@@ -2,7 +2,7 @@
 <h1 class="text-center py-5">Productos</h1>
 <div class="container">
     <div class="row justify-content-around">
-{{#each payload}}
+{{#each productos.payload}}
         
     <div class="col-4">
         <div class="card">
@@ -30,15 +30,21 @@
   </div>
 {{/each}}
     </div>
-      <div>
-         {{#if hasPrevPage}}
-            <a href="{{prevLink}}" class="btn btn-success">Anterior</a>
+      <div class="paginado">
+        {{#if hasPrevPage }}
+            <a class="avtive" href='{{firstLink}}'>Primera</a>
+            <a class="active" href='{{prevLink}}'>Anterior</a>
+        {{else}}
+            <a class="disabled">Primera</a>
+            <a class="disabled">Anterior</a>
         {{/if}}
-        | 
-        {{#if hasNextPage}}
-            <a href="{{nextLink}}"class="btn btn-success">Siguiente</a>
+        {{#if hasNextPage }}
+            <a class="avtive" href='{{nextLink}}'>Siguiente</a>
+            <a class="active"href='{{lastLink}}'>Ultima</a>
+        {{else}}
+            <a class="disabled">Siguiente</a>
+            <a class="disabled">Ultima</a>
         {{/if}}
-    </div>
 </div>
 
 </section>
