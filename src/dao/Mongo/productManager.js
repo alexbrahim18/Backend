@@ -1,6 +1,13 @@
-import  productModel  from "../models/product.model.js";
+import mongoose from "mongoose";
+import productModel from "../../models/product.model.js";
 
-class ProductManagerDB {
+export default class ProductManagerDB {
+    constructor() {
+        this.productModel = mongoose.model(
+            productModel.productCollection,
+            productModel.productSchema
+        );
+    }
     getProducts = async (limit = 10, page = 1, query = "{}", sort) => {
         // verifico si query tiene un formato valido
         const isValidJSON = (query) => {
@@ -15,7 +22,7 @@ class ProductManagerDB {
         // verifico si sort tiene un formato valido
         const vsort = sort === "asc" || sort === "desc" ? { price: sort } : {};
         try {
-            const productos = await productModel.paginate(vquery, {
+            const productos = await this.productModel.paginate(vquery, {
                 page,
                 limit,
                 lean: true,
@@ -34,11 +41,7 @@ class ProductManagerDB {
                 hasPrevPage: productos.hasPrevPage,
                 hasNextPage: productos.hasNextPage,
                 firstLink: productos.hasPrevPage
-                    ? "products?" +
-                      queryLink +
-                      limitLink +
-                      sortLink +
-                      "&page=1"
+                    ? "products?" + queryLink + limitLink + sortLink + "&page=1"
                     : null,
                 prevLink: productos.hasPrevPage
                     ? "products?" +
@@ -72,7 +75,10 @@ class ProductManagerDB {
     };
     getProductById = async (id) => {
         try {
-            const foundprod = productModel.findOne({ _id: id }).lean().exec();
+            const foundprod = this.productModel
+                .findOne({ _id: id })
+                .lean()
+                .exec();
             return foundprod;
         } catch (error) {
             return { error: 3, servererror: error };
@@ -109,7 +115,7 @@ class ProductManagerDB {
         !Array.isArray(thumbnails) &&
             errortxt.push("thumbnails tiene que ser un array.");
         try {
-            const found = await productModel
+            const found = await this.productModel
                 .findOne({ code: code })
                 .lean()
                 .exec();
@@ -132,7 +138,7 @@ class ProductManagerDB {
                 code,
                 stock,
             };
-            const newProduct = new productModel(product);
+            const newProduct = new this.productModel(product);
             newProduct.save();
             return newProduct;
         }
@@ -150,7 +156,10 @@ class ProductManagerDB {
     }) => {
         // busco el indice del producto
         try {
-            const found = await productModel.findOne({ _id: id }).lean().exec();
+            const found = await this.productModel
+                .findOne({ _id: id })
+                .lean()
+                .exec();
             if (found === null) {
                 return { error: 2, errortxt: "el producto no existe" };
             }
@@ -180,7 +189,7 @@ class ProductManagerDB {
                 errortxt.push("thumbnails tiene que ser un array.");
             // verifico si el codigo nuevo no se repite en otro producto
 
-            const codefound = await productModel
+            const codefound = await this.productModel
                 .findOne({
                     $and: [{ _id: { $ne: id } }, { code: code }],
                 })
@@ -193,16 +202,19 @@ class ProductManagerDB {
             if (errortxt.length > 0) {
                 return { error: 1, errortxt: errortxt };
             }
-            const updatedProduct = await productModel.findByIdAndUpdate(id, {
-                title,
-                description,
-                price,
-                status,
-                category,
-                thumbnails,
-                code,
-                stock,
-            });
+            const updatedProduct = await this.productModel.findByIdAndUpdate(
+                id,
+                {
+                    title,
+                    description,
+                    price,
+                    status,
+                    category,
+                    thumbnails,
+                    code,
+                    stock,
+                }
+            );
             return {
                 id,
                 title,
@@ -221,11 +233,16 @@ class ProductManagerDB {
     deleteProduct = async (id) => {
         // busco el indice del producto
         try {
-            const found = await productModel.findOne({ _id: id }).lean().exec();
+            const found = await this.productModel
+                .findOne({ _id: id })
+                .lean()
+                .exec();
             if (found === null) {
                 return { error: 2, errortxt: "el producto no existe" };
             } else {
-                const deletedProd = await productModel.deleteOne({ _id: id });
+                const deletedProd = await this.productModel.deleteOne({
+                    _id: id,
+                });
                 return deletedProd;
             }
         } catch (error) {
@@ -234,4 +251,4 @@ class ProductManagerDB {
     };
 }
 
-export { ProductManagerDB };
+// export { ProductManagerDB };

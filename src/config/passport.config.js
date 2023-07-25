@@ -1,8 +1,9 @@
 import passport from "passport";
+import mongoose from "mongoose";
 import local from "passport-local";
 import passport_jwt, { ExtractJwt } from "passport-jwt";
 import GitHubStrategy from "passport-github2";
-import  userModel  from "../dao/models/user.model.js";
+import  userModel  from "../models/user.model.js";
 import {
     createHash,
     isValidPassword,
@@ -10,6 +11,8 @@ import {
     extractCookie,
 } from "../utils.js";
 import config from "./config.js";
+
+const userModelpp = mongoose.model(userModel.userCollection, userModel.userSchema)
 
 const LocalStrategy = local.Strategy;
 const GithubStrategy = GitHubStrategy.Strategy;
@@ -46,7 +49,7 @@ const initializePassport = () => {
                         errortxt.push(
                             "password debe tener al entre 8 y 120 caracteres, al menos una mayúscula, una minúscula y un caracter especial."
                         );
-                    const found = await userModel
+                    const found = await userModelpp
                         .findOne({ email: email })
                         .lean()
                         .exec();
@@ -65,7 +68,7 @@ const initializePassport = () => {
                             age,
                             password: createHash(password),
                         };
-                        const newUser = await userModel.create(user);
+                        const newUser = await userModelpp.create(user);
                         return done(null, newUser);
                     }
                 } catch (error) {
@@ -92,10 +95,11 @@ const initializePassport = () => {
                             role: "admin",
                         };
                         const token = generateToken(adminuser);
-                        found.token = adminuser;
+                        adminuser.token = token;
+                        console.log(adminuser)
                         return done(null, adminuser);
                     } else {
-                        const found = await userModel.findOne({
+                        const found = await userModelpp.findOne({
                             email: username,
                         });
                         if (
@@ -130,7 +134,7 @@ const initializePassport = () => {
                         ? profile._json.email
                         : profile.emails[0].value;
 
-                    let user = await userModel.findOne({
+                    let user = await userModelpp.findOne({
                         email: useremail,
                     });
                     if (!user) {
@@ -168,7 +172,7 @@ const initializePassport = () => {
         done(null, user._id);
     });
     passport.deserializeUser(async (id, done) => {
-        const user = await userModel.findById(id);
+        const user = await userModelpp.findById(id);
         done(null, user);
     });
 };

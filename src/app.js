@@ -5,15 +5,21 @@ import session from "express-session"
 import cookieParser from "cookie-parser"
 import passport from "passport";
 
+import {Server} from "socket.io";
+
 import config from "./config/config.js"
 import apiProductsRouter from "./router/apiProduct.mongo.router.js"
 import productsRouter from "./router/products.mongo.router.js"
 import apiCartsRouter from "./router/apiCart.mongo.router.js"
 import cartsRouter from "./router/carts.mongo.router.js"
 import realTimeProductsRouter from "./router/rtp.router.js"
+import chatRouter from "./router/chat.router.js";
 import userRouter from "./router/users.router.js"
+import mailerRouter from "./router/mailer.router.js";
+import smsRouter from "./router/sms.router.js";
 import __dirname,{passportAuthenticate} from "./utils.js";
 import initializePassport from "./config/passport.config.js"
+import { messageModel } from "./models/message.model.js";
 
 mongoose.set("strictQuery", false);
 
@@ -43,6 +49,9 @@ app.use("/api/products", passportAuthenticate("jwt"), apiProductsRouter);
 app.use("/products", passportAuthenticate("jwt"), productsRouter);
 app.use("/api/carts", passportAuthenticate("jwt"), apiCartsRouter);
 app.use("/carts", passportAuthenticate("jwt"), cartsRouter);
+app.use("/chat", passportAuthenticate("jwt"), chatRouter);
+app.use("/mail", passportAuthenticate("jwt"), mailerRouter);
+app.use("/sms", passportAuthenticate("jwt"), smsRouter);
 app.use(
   "/realtimeproducts",
   passportAuthenticate("jwt"),

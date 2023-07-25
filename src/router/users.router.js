@@ -1,12 +1,11 @@
 import { Router } from "express";
 import passport from "passport";
-import { UserManagerDB } from "../dao/controllers/userManager.js";
 import { generateToken, userLogged, passportAuthenticateApi } from "../utils.js";
+import UserDto from "../dto/user.dto.js";
 import config from '../config/config.js'
 
 
 const router = Router();
-const user = new UserManagerDB();
 router.get("/", userLogged("jwt"), (req, res) => {
     res.render("login", {});
 });
@@ -99,6 +98,7 @@ router.get("/current",  passportAuthenticateApi("jwt"), (req, res) => {
             error: "No existe una sesión de usuario activa",
         });
     }
-    res.send(req.user);
+    const user = new UserDto(req.user)
+    res.send(user);
 });
 export default router;

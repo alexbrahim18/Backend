@@ -15,5 +15,11 @@ export default {
     JWT_SECRET: process.env.JWT_SECRET,
     JWT_COOKIE: process.env.JWT_COOKIE,
     ADMIN_EMAIL: process.env.ADMIN_MAIL,
-    ADMIN_PASSWORD: process.env.ADMIN_PASS, 
+    ADMIN_PASSWORD: process.env.ADMIN_PASS,
+    PERSISTANCE: process.env.PERSISTANCE,
+    GMAIL_PASS: process.env.GMAIL_PASS,
+    GMAIL_USER: process.env.GMAIL_USER,
+    TWILIO_SID: process.env.TWILIO_SID,
+    TWILIO_AT: process.env.TWILIO_AT,
+    TWILIO_PH: process.env.TWILIO_PH, 
 };
