@@ -117,6 +117,23 @@ const updateAllProducts = async (req, res) => {
     }
 };
 
+const closeCart = async (req, res) => {
+    const cart = {
+        cid: req.params.cid,
+        user: req.user,
+    };
+    try {
+        const result = await carro.closeCart(cart);
+        if (result.error) {
+            res.status(400).send(result);
+        } else {
+            res.status(201).send(result);
+        }
+    } catch (err) {
+        res.status(400).send(err);
+    }
+};
+
 export default {
     getCarts,
     getCartById,
@@ -126,4 +143,5 @@ export default {
     deleteProduct,
     updateProductQty,
     updateAllProducts,
+    closeCart,
 };

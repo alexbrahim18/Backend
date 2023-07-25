@@ -19,8 +19,8 @@ router.get("/", async (req, res) => {
         });
         const result = await transport.sendMail({
             from:
-                "Sinteplast Construccion - Tienda <" +
-                config.MAIL_APP_USER +
+                "<" +
+                config.GMAIL_USER +
                 ">",
             to: "alex.brahim18@gmail.com",
             subject: "Correo de prueba",

@@ -18,10 +18,8 @@ export default class Persistance {
         }
     };
     static getCartPers = async () => {
-        console.log('getCartPers')
         switch (config.PERSISTANCE) {
             case "MONGODB":
-                console.log('MONGODB')
                 let { default: CartManagerDB } = await import("./cartManager.js");
                 return new CartManagerDB();
                 break;
