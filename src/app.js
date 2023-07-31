@@ -17,6 +17,7 @@ import chatRouter from "./router/chat.router.js";
 import userRouter from "./router/users.router.js"
 import mailerRouter from "./router/mailer.router.js";
 import smsRouter from "./router/sms.router.js";
+import mockingproductsRouter from "./routes/mockingproducts.router.js";
 import __dirname,{passportAuthenticate} from "./utils.js";
 import initializePassport from "./config/passport.config.js"
 import { messageModel } from "./models/message.model.js";
