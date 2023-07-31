@@ -23,7 +23,7 @@ const getProductById = async (req, res) => {
         });
     }
 };
-const addProduct = async (req, res) => {
+const addProduct = async (req, res, next) => {
     const producto = req.body;
     try {
         const result = await prod.addProduct(producto);
@@ -33,7 +33,7 @@ const addProduct = async (req, res) => {
             res.status(201).send(result);
         }
     } catch (err) {
-        res.status(400).send(err);
+       next(err);
     }
 };
 const updateProduct = async (req, res) => {

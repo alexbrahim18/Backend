@@ -28,15 +28,42 @@ router.post(
             delete req.user.password;
             delete req.user._id;
             delete req.user.__v;
-            res.cookie(config.JWT_COOKIE, req.user.token).redirect(
+            console.log(req.user)
+            res.status(200).cookie(config.JWT_COOKIE, req.user.token).redirect(
                 "/products",
             );
         }
     },
 );
+
+router.post(
+    "/apilogin",
+    passport.authenticate("login", { failureRedirect: "/failurelogin" }),
+    async (req, res) => {
+        if (!req.user) {
+            res.render("login", {
+                message: {
+                    type: "error",
+                    title: "Error de logueo",
+                    text: "El correo eletrónico o contraseña no son correctos",
+                },
+            });
+        } else {
+            delete req.user.password;
+            delete req.user._id;
+            delete req.user.__v;
+            console.log(req.user)
+            res.status(200).cookie(config.JWT_COOKIE, req.user.token).send(
+                req.user
+            );
+        }
+    },
+);
+
 router.get("/register", userLogged("jwt"), (req, res) => {
     res.render("register", {});
 });
+
 router.post(
     "/register",
     passport.authenticate("register", {

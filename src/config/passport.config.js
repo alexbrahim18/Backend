@@ -91,13 +91,13 @@ const initializePassport = () => {
                             first_name: "Admin",
                             last_name: "Coder",
                             email: username,
-                            age: -1,
+                            age: 0,
                             role: "admin",
+                            cart:null,
                         };
-                        const token = generateToken(adminuser);
-                        adminuser.token = token;
-                        console.log(adminuser)
-                        return done(null, adminuser);
+                        const token = generateToken(found);
+                        found.token = token;
+                        return done(null, found);
                     } else {
                         const found = await userModelpp.findOne({
                             email: username,
@@ -168,12 +168,22 @@ const initializePassport = () => {
         )
     );
 
-    passport.serializeUser((user, done) => {
-        done(null, user._id);
-    });
     passport.deserializeUser(async (id, done) => {
-        const user = await userModelpp.findById(id);
-        done(null, user);
+        if (id === config.ADMIN_EMAIL) {
+            const user = {
+                _id: config.ADMIN_EMAIL,
+                first_name: "Admin",
+                last_name: "Coder",
+                email: config.ADMIN_EMAIL,
+                age: 0,
+                role: "admin",
+                cart: null,
+            };
+            done(null, user);
+        } else {
+            const user = await userModelpp.findById(id);
+            done(null, user);
+        }
     });
 };
 

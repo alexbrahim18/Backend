@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 import productModel from "../../models/product.model.js";
+import CustomError from "../../controllers/errors/custom.error.js";
+import EErrors from "../../controllers/errors/enums.js";
+import { generateProductErrorInfo } from "../../controllers/errors/info.js";
 
 export default class ProductManagerDB {
     constructor() {
@@ -126,7 +129,12 @@ export default class ProductManagerDB {
             return { error: 3, servererror: error };
         }
         if (errortxt.length > 0) {
-            return { error: 1, errortxt: errortxt };
+            return CustomError.createError({
+                name: "Error en la creacion del producto",
+                cause: generateProductErrorInfo(errortxt),
+                message: "No se pudo crear el producto",
+                code: EErrors.INVALID_TYES_ERROR,
+            });
         } else {
             const product = {
                 title,

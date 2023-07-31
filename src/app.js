@@ -21,6 +21,8 @@ import mockingproductsRouter from "./routes/mockingproducts.router.js";
 import __dirname,{passportAuthenticate} from "./utils.js";
 import initializePassport from "./config/passport.config.js"
 import { messageModel } from "./models/message.model.js";
+import errorHandler from "./controllers/errors/middleware.error.js";
+
 
 mongoose.set("strictQuery", false);
 
@@ -53,12 +55,14 @@ app.use("/carts", passportAuthenticate("jwt"), cartsRouter);
 app.use("/chat", passportAuthenticate("jwt"), chatRouter);
 app.use("/mail", passportAuthenticate("jwt"), mailerRouter);
 app.use("/sms", passportAuthenticate("jwt"), smsRouter);
+app.use("/mockingproducts", passportAuthenticate("jwt"), mockingproductsRouter);
 app.use(
   "/realtimeproducts",
   passportAuthenticate("jwt"),
   realTimeProductsRouter
 );
 app.use(express.static(__dirname + "/public"));
+app.use(errorHandler);
 
 
 
