@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import passport from "passport";
+import winston from "winston";
+import { fakerES } from "@faker-js/faker";
 
 import config from "./config/config.js";
 import { fileURLToPath } from "url";
@@ -29,7 +31,7 @@ export const passportAuthenticate = (strategy) => {
     return async (req, res, next) => {
         passport.authenticate(strategy, function (error, user, info) {
             if (error) return next(error);
-            if (!user)
+            if (!user){
                 return res.status(401).render("login", {
                     message: {
                         type: "error",
@@ -37,6 +39,7 @@ export const passportAuthenticate = (strategy) => {
                         text: info.text ? info.text : "Iniciá la sesión",
                     },
                 });
+            }
             req.user = user;
             next();
         })(req, res, next);
@@ -82,4 +85,43 @@ export const generateMockProducts = (qty) => {
         });
     }
     return products;
+};
+
+export const createLogger = () => {
+    if (config.ENVIROMENT === "PROD") {
+        return winston.createLogger({
+            levels: {
+                fatal: 0,
+                error: 1,
+                warning: 2,
+                info: 3,
+                http: 4,
+                debug: 5,
+            },
+            transports: [
+                new winston.transports.File({
+                    filename: "./src/logs/log.log",
+                    level: "info",
+                    format: winston.format.json(),
+                }),
+            ],
+        });
+    } else {
+        return winston.createLogger({
+            levels: {
+                fatal: 0,
+                error: 1,
+                warning: 2,
+                info: 3,
+                http: 4,
+                debug: 5,
+            },
+            transports: [
+                new winston.transports.Console({
+                    level: "debug",
+                    format: winston.format.simple(),
+                }),
+            ],
+        });
+    }
 };

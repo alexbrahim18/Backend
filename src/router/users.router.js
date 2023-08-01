@@ -1,11 +1,12 @@
 import { Router } from "express";
 import passport from "passport";
-import { generateToken, userLogged, passportAuthenticateApi } from "../utils.js";
+import { generateToken, userLogged, passportAuthenticateApi,createLogger, } from "../utils.js";
 import UserDto from "../dto/user.dto.js";
 import config from '../config/config.js'
 
 
 const router = Router();
+const logger = createLogger();
 router.get("/", userLogged("jwt"), (req, res) => {
     res.render("login", {});
 });
@@ -28,10 +29,10 @@ router.post(
             delete req.user.password;
             delete req.user._id;
             delete req.user.__v;
-            console.log(req.user)
-            res.status(200).cookie(config.JWT_COOKIE, req.user.token).redirect(
-                "/products",
-            );
+            logger.debug(Date.now() + " / " + JSON.stringify(req.user));
+            res.status(200)
+                .cookie(config.JWT_COOKIE, req.user.token)
+                .redirect("/products");
         }
     },
 );
@@ -52,10 +53,10 @@ router.post(
             delete req.user.password;
             delete req.user._id;
             delete req.user.__v;
-            console.log(req.user)
-            res.status(200).cookie(config.JWT_COOKIE, req.user.token).send(
-                req.user
-            );
+            logger.debug(Date.now() + " / " + req.user);
+            res.status(200)
+                .cookie(config.JWT_COOKIE, req.user.token)
+                .send(req.user);
         }
     },
 );
@@ -114,9 +115,7 @@ router.get(
         delete req.user.__v;
         const token = generateToken(req.user);
         req.user.token = token;
-        res.cookie(config.JWT_COOKIE, req.user.token).redirect(
-            "/products",
-        );
+        res.cookie(config.JWT_COOKIE, req.user.token).redirect("/products");
     },
 );
 router.get("/current",  passportAuthenticateApi("jwt"), (req, res) => {
@@ -125,7 +124,7 @@ router.get("/current",  passportAuthenticateApi("jwt"), (req, res) => {
             error: "No existe una sesión de usuario activa",
         });
     }
-    const user = new UserDto(req.user)
+    const user = new UserDto(req.user);
     res.send(user);
 });
 export default router;

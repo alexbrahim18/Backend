@@ -3,8 +3,11 @@ import userModel from "../../models/users.Model.js";
 import bcrypt from "bcrypt";
 
 export default class UserManagerDB {
-    constructor(){
-        this.userModel = mongoose.model(userModel.userCollection, userModel.userSchema);
+    constructor() {
+        this.userModel = mongoose.model(
+            userModel.userCollection,
+            userModel.userSchema,
+        );
     }
     newUser = async ({ first_name, last_name, email, age, password }) => {
         try {
@@ -58,7 +61,8 @@ export default class UserManagerDB {
     };
     loginUser = async ({ email, password }) => {
         try {
-            console.log(email, password)
+            
+            logger.debug(Date.now() + " /  " + email + " - " + password);
             const found = await this.userModel
                 .findOne({ email: email })
                 .lean()
@@ -78,7 +82,7 @@ export default class UserManagerDB {
             }
             return found;
         } catch (error) {
-            console.log(error);
+            logger.error(Date.now() + " / " + error);
             return { error: 3, servererror: error };
         }
     };
