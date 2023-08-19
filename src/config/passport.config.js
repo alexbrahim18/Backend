@@ -11,6 +11,9 @@ import {
     extractCookie,
 } from "../utils.js";
 import config from "./config.js";
+import dotenv from "dotenv";
+
+dotenv.config()
 
 const userModelpp = mongoose.model(userModel.userCollection, userModel.userSchema)
 
@@ -84,16 +87,17 @@ const initializePassport = () => {
             async (username, password, done) => {
                 try {
                     if (
-                        username === config.ADMIN_EMAIL &&
-                        password === config.ADMIN_PASSWORD
+                        username === process.env.ADMIN_MAIL &&
+                        password === process.env.ADMIN_PASS
                     ) {
-                        adminuser = {
+                        const found = {
+                            _id: config.ADMIN_EMAIL,
                             first_name: "Admin",
                             last_name: "Coder",
-                            email: username,
+                            email: config.ADMIN_EMAIL,
                             age: 0,
                             role: "admin",
-                            cart:null,
+                            cart: null,
                         };
                         const token = generateToken(found);
                         found.token = token;
@@ -145,7 +149,7 @@ const initializePassport = () => {
                             age: 0,
                             password: " ",
                         };
-                        const newUser = await userModel.create(adduser);
+                        const newUser = await userModelpp.create(adduser);
                         return done(null, newUser);
                     }
                     return done(null, user);
@@ -167,6 +171,10 @@ const initializePassport = () => {
             }
         )
     );
+
+    passport.serializeUser((user, done) => {
+        done(null, user._id);
+    });
 
     passport.deserializeUser(async (id, done) => {
         if (id === config.ADMIN_EMAIL) {

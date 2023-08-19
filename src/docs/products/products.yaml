@@ -1,0 +1,341 @@
+paths:
+  /products/:
+    get:
+      summary: Renderiza una vista con una lista de productos
+      tags:
+        - Products
+      responses:
+        "200":
+          description: La vista se renderizó correctamente
+          content:
+            text/HTML:
+        "400":
+          description: Error de BBDD
+          content:
+            text/HTML:
+  /products/{cid}:
+    get:
+      summary: Renderiza una vista con el producto solicitado
+      tags:
+        - Products
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: id del producto
+      responses:
+        "200":
+          description: La vista se renderizó correctamente
+          content:
+            text/HTML:
+        "404":
+          description: El producto no existe
+          content:
+            text/HTML:
+  /api/products/:
+    get:
+      summary: Devuelve una lista de productos
+      tags:
+        - Products
+      parameters:
+        - name: limit
+          in: query
+          description: Número máximo de productos por página.
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+        - name: page
+          in: query
+          description: Número de página.
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: query
+          in: query
+          description: Búsqueda por categoría del producto.
+          schema:
+            type: string
+          example: {"category":"Hombre"}
+        - name: sort
+          in: query
+          description: Cambia el orden de la lista entre ASC y DESC.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: La vista se obtuvo correctamente
+          content:
+            application/json:
+              example:
+                status: success
+                payload:
+                        category: 'Hombre'
+      
+      _id: 646febe876700886b7c13fd8
+      title: 'Zapatillas Nike Air Max'
+      description: 'Zapatillas marca Nike, modelo Air Max, co
+lor azul'
+      price: 24300
+      thumbnail: 'https://nikearprod.vtexassets.com/arquivos/
+ids/407711-800-800?v=638143133389600000&width=800&height=800&
+aspect=true'
+      code: 'abc123'
+      stock: 15
+      status: true
+      category: 'Hombre'
+      
+      _id: 646febe876700886b7c13fde
+      title: 'Zapatillas Puma Suede Classic'
+      description: 'Zapatillas marca Puma, modelo Suede class
+ic, color rojo'
+      price: 20000
+      thumbnail: 'https://http2.mlstatic.com/D_NQ_NP_798595-M
+LA68905937885_042023-O.webp'
+      code: 'def789'
+      stock: 25
+      status: true
+      category: 'Hombre'
+      
+      _id: 646febe876700886b7c13fdf
+      title: 'Zapatillas Adidas Stan Smith'
+      description: 'Zapatillas marca adidas, modelo Stan Smit
+h, color verde'
+      price: 23000
+      thumbnail: 'https://www.moov.com.ar/on/demandware.stati
+c/-/Sites-365-dabra-catalog/default/dw1679c393/products/AD_GW
+8162/AD_GW8162-1.JPG'
+      code: 'j1j0'
+      stock: 8
+      status: true
+      category: 'Hombre'
+      
+      _id: 646febe876700886b7c13fe0
+      title: 'Zapatillas Adidas Stan Smith'
+      description: 'Zapatillas marca adidas, modelo Stan Smit
+h, color verde'
+      price: 29000
+      thumbnail: 'https://assets.adidas.com/images/w_600,f_au
+to,q_auto/23ac00bde10341db8733ad5100fdc5c2_9366/Zapatillas_St
+an_Smith_Disney_Monsters_Inc._Blanco_GZ5990_01_standard.jpg'
+      code: 'j1j4'
+      stock: 8
+      status: true
+      category: 'Hombre'
+     
+  totalPages: 2
+  prevPage: null
+  nextPage: 2
+  page: 1
+  hasPrevPage: false
+  hasNextPage: true
+  firstLink: null
+  prevLink: null
+  nextLink: products?page=2
+  lastLink: products?page=2
+        "400":
+          description: Error de BBDD
+    post:
+      summary: Agrega un producto a la lista de productos
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                  format: double
+                thumbnails:
+                  type: array
+                  items:
+                    type: string
+                  minItems: 0
+                code:
+                  type: string
+                stock:
+                  type: integer
+                category:
+                  type: string
+                status:
+                  type: boolean
+                  default: true
+      responses:
+        "200":
+          description: El producto fue agregado correctamente
+          content:
+            application/json:
+              example:
+                status: success
+                payload:
+                  - _id: 646febe876700886b7c13fd8
+                    title: 'Zapatillas Nike Air Max'
+                    description: 'Zapatillas marca Nike, modelo Air Max, color azul'
+                    price: 24300
+                    thumbnail: 'https://nikearprod.vtexassets.com/arquivos/ids/407711-800-800?v=638143133389600000&width=800&height=800&aspect=true'
+                    code: 'abc123'
+                    stock: 15
+                    status: true
+                    category: 'Hombre'
+        "401":
+          description: Error de autorización
+          content:
+            application/json:
+              example:
+                error: No esta autorizado para editar productos
+    put:
+      summary: Modifica un producto a la lista de productos
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                  format: double
+                thumbnails:
+                  type: array
+                  items:
+                    type: string
+                  minItems: 0
+                code:
+                  type: string
+                stock:
+                  type: integer
+                category:
+                  type: string
+                status:
+                  type: boolean
+                  default: true
+      responses:
+        "200":
+          description: El producto fue modificado correctamente
+          content:
+            application/json:
+              example:
+                status: success
+                payload:
+                  - _id: 646febe876700886b7c13fd8
+                    title: 'Zapatillas Nike Air Max'
+                    description: 'Zapatillas marca Nike, modelo Air Max, color azul'
+                    price: 24300
+                    thumbnail: 'https://nikearprod.vtexassets.com/arquivos/ids/407711-800-800?v=638143133389600000&width=800&height=800&aspect=true'
+                    code: 'abc123'
+                    stock: 15
+                    status: true
+                    category: 'Hombre'
+        "401":
+          description: Error de autorización
+          content:
+            application/json:
+              example:
+                error: No esta autorizado para editar productos
+  /api/products/{pid}:
+    get:
+      summary: Devuelve el producto solicitado
+      tags:
+        - Products
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: id del producto
+      responses:
+        "200":
+          description: La vista se obtuvo correctamente
+          content:
+            application/json:
+              example:
+                status: success
+                payload:
+                  - _id: 646febe876700886b7c13fd8
+                    title: 'Zapatillas Nike Air Max'
+                    description: 'Zapatillas marca Nike, modelo Air Max, color azul'
+                    price: 24300
+                    thumbnail: 'https://nikearprod.vtexassets.com/arquivos/ids/407711-800-800?v=638143133389600000&width=800&height=800&aspect=true'
+                    code: 'abc123'
+                    stock: 15
+                    status: true
+                    category: 'Hombre'
+        "404":
+          description: El producto no existe
+          content:
+            text/HTML:
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id: 
+          type: ObjectId
+          description: Mongo Id
+        title: 
+          type: String
+          required: true
+          description: Nombre del producto
+        description: 
+          type: String
+          required: true
+          description: Descripción del producto
+        price: 
+          type: Number
+          required: true
+          description: Precio del producto
+        category:
+          type: String,
+          required: true
+          description: Categoría del producto
+        status:
+          type: Boolean
+          required: true
+          description: Estado del producto
+        thumbnails: 
+          type: Array
+          required: false
+          description: Lista de urls con las imágenes del producto
+        code:
+          type: String
+          required: true
+          description: Código del producto
+        stock: 
+          type: Number
+          required: true
+          description: Stock disponible del producto
+      example:
+        _id: 646febe876700886b7c13fd8
+        title: 'Zapatillas Nike Air Max'
+        description: 'Zapatillas marca Nike, modelo Air Max, color azul'
+        category: 'Hombre'
+        status: true
+        thumbnail: 'https://nikearprod.vtexassets.com/arquivos/ids/407711-800-800?v=638143133389600000&width=800&height=800&aspect=true'
+        code: 'abc123'
+        stock: 15
+        price: 24300   
+
+      
+      
+      
+      
+     
+      

@@ -7,6 +7,7 @@ const getProducts = async (req, res) => {
     try {
         const productos = await prod.getProducts(limit, page, query, sort);
         res.status(200).send(productos);
+        console.log(productos)
     } catch (err) {
         res.status(400).send(err);
     }

@@ -7,6 +7,7 @@ import config from '../config/config.js'
 
 const router = Router();
 const logger = createLogger();
+
 router.get("/", userLogged("jwt"), (req, res) => {
     res.render("login", {});
 });

@@ -4,9 +4,9 @@ import twilio from "twilio";
 
 import cartModel from "../../models/cart.model.js";
 import productModel from "../../models/product.model.js";
-import ticketModel from "../models/ticket.model.js";
+import ticketModel from "../../models/ticket.model.js";
 
-import config from "../config/config.js";
+import config from "../../config/config.js";
 
 const productModelCart = mongoose.model(
     productModel.productCollection,
